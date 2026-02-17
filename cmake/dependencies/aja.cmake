@@ -71,7 +71,17 @@ ELSEIF(RV_TARGET_WINDOWS)
   )
 ENDIF()
 
-LIST(APPEND _configure_options "-DAJANTV2_DISABLE_DEMOS=ON" "-DAJANTV2_DISABLE_TOOLS=ON" "-DAJANTV2_DISABLE_TESTS=ON" "-DAJANTV2_BUILD_SHARED=ON")
+LIST(
+  APPEND
+  _configure_options
+  "-DAJANTV2_DISABLE_DEMOS=ON"
+  "-DAJANTV2_DISABLE_TOOLS=ON"
+  "-DAJANTV2_DISABLE_TESTS=ON"
+  # Rocky 10 / newer kernels can break the out-of-tree AJA kernel driver build.
+  # We only need the userspace SDK library for RV output integration.
+  "-DAJANTV2_DISABLE_DRIVER=ON"
+  "-DAJANTV2_BUILD_SHARED=ON"
+)
 
 # In Debug, the MSVC runtime library needs to be set to MultiThreadedDebug. Otherwise, it will be set to MultiThreaded.
 IF(RV_TARGET_WINDOWS
