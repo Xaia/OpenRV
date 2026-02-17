@@ -71,6 +71,13 @@ else
      setenv LD_LIBRARY_PATH "$RV_HOME/lib"
 endif
 
+# RV currently has X11-dependent paths (e.g. GLX extension probing).
+# Under Wayland this can trigger a startup crash; default to xcb unless
+# the user explicitly selected a Qt platform backend.
+if (! $?QT_QPA_PLATFORM && $?WAYLAND_DISPLAY) then
+    setenv QT_QPA_PLATFORM "xcb"
+endif
+
 # Detect if VFX2023 (OpenSSL 1.1.1) or VFX2024+ (OpenSSL (3+).
 set python_version = `$RV_HOME/bin/python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'`
 set minor_version = `echo $python_version | cut -d. -f2`
