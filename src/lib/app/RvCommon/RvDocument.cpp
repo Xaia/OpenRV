@@ -257,20 +257,27 @@ namespace Rv
 
 #ifdef PLATFORM_LINUX
 
-        int op_ret, ev_ret, er_ret;
+        const bool runningViaWayland = !qEnvironmentVariableIsEmpty("WAYLAND_DISPLAY");
+        const bool usingXcbBackend = (QGuiApplication::platformName().compare("xcb", Qt::CaseInsensitive) == 0);
 
-        bool haveNV = XQueryExtension(QX11Info::display(), "NV-GLX", &op_ret, &ev_ret, &er_ret);
-
-        if (!haveNV)
+        if (!runningViaWayland && usingXcbBackend && QX11Info::display())
         {
-            cerr << endl;
-            cerr << "ERROR:******* NV-GLX Extension Missing ***********" << endl;
-            cerr << "    If you're using an Nvidia card, please install" << endl;
-            cerr << "    the optimized NVIDIA binary driver." << endl;
-            cerr << "    If you're using an ATI card, please be aware " << endl;
-            cerr << "    that RV has not been tested with ATI cards." << endl;
-            cerr << "**************************************************" << endl;
-            cerr << endl;
+            int op_ret = 0;
+            int ev_ret = 0;
+            int er_ret = 0;
+            const bool haveNV = XQueryExtension(QX11Info::display(), "NV-GLX", &op_ret, &ev_ret, &er_ret);
+
+            if (!haveNV)
+            {
+                cerr << endl;
+                cerr << "WARNING:******* NV-GLX Extension Missing ***********" << endl;
+                cerr << "    If you're using an Nvidia card, please install" << endl;
+                cerr << "    the optimized NVIDIA binary driver." << endl;
+                cerr << "    If you're using an ATI card, please be aware " << endl;
+                cerr << "    that RV has not been tested with ATI cards." << endl;
+                cerr << "****************************************************" << endl;
+                cerr << endl;
+            }
         }
 #endif
 
